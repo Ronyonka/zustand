@@ -15,6 +15,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "../store/user";
 
+import Link from "next/link";
+
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -72,10 +74,13 @@ function LoginPage() {
             )}
           </CardContent>
 
-          <CardFooter>
+          <CardFooter className="flex flex-col">
             <Button type="submit" className="w-full">
               Login
             </Button>
+            <p>
+              Don't have an account yet? <Link href="/sign-up">Sign Up</Link>
+            </p>
           </CardFooter>
         </Card>
       </form>

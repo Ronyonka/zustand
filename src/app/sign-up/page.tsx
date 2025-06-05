@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+import Link from "next/link";
+
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -58,10 +60,13 @@ export default function RegisterPage() {
               />
             </div>
           </CardContent>
-          <CardFooter className="mt-4">
+          <CardFooter className="mt-4 flex flex-col">
             <Button type="submit" className="w-full">
               Register
             </Button>
+            <p>
+              Havve an account already? <Link href="/login">Login</Link>
+            </p>
           </CardFooter>
         </form>
       </Card>
