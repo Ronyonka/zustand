@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import { useUserStore } from "../store/user";
 
 import Link from "next/link";
@@ -24,14 +25,32 @@ function LoginPage() {
   const router = useRouter();
   const loginUser = useUserStore((state) => state.loginUser);
 
+  const mutation = useMutation({
+    mutationFn: async ({
+      email,
+      password,
+    }: {
+      email: string;
+      password: string;
+    }) => {
+      const response = await loginUser(email, password);
+      if (!response) {
+        throw new Error("Invalid email or password.");
+      }
+      return response;
+    },
+    onSuccess: () => {
+      router.push("/");
+    },
+    onError: (error: any) => {
+      setError(error.message || "An error occurred.");
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const success = loginUser(email, password);
-    if (success) {
-      router.push("/");
-    } else {
-      setError("Invalid email or password.");
-    }
+    setError("");
+    mutation.mutate({ email, password });
   };
 
   return (
@@ -75,8 +94,12 @@ function LoginPage() {
           </CardContent>
 
           <CardFooter className="flex flex-col">
-            <Button type="submit" className="w-full">
-              Login
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={mutation.isLoading}
+            >
+              {mutation.isLoading ? "Logging in..." : "Login"}
             </Button>
             <p>
               Don't have an account yet? <Link href="/sign-up">Sign Up</Link>

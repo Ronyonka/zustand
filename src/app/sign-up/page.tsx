@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import { useUserStore } from "../store/user";
 import {
   Card,
@@ -19,14 +20,36 @@ import Link from "next/link";
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const registerUser = useUserStore((state) => state.registerUser);
   const router = useRouter();
 
+  const mutation = useMutation({
+    mutationFn: async ({
+      email,
+      password,
+    }: {
+      email: string;
+      password: string;
+    }) => {
+      const response = await registerUser(email, password);
+      if (!response) {
+        throw new Error("User already exists.");
+      }
+      return response;
+    },
+    onSuccess: () => {
+      router.push("/");
+    },
+    onError: (error: any) => {
+      setError(error.message || "An error occurred.");
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const success = registerUser(email, password);
-    if (success) router.push("/");
-    else alert("User already exists.");
+    setError("");
+    mutation.mutate({ email, password });
   };
 
   return (
@@ -59,13 +82,20 @@ export default function RegisterPage() {
                 required
               />
             </div>
+            {error && (
+              <p className="text-sm text-red-500 mt-2 text-center">{error}</p>
+            )}
           </CardContent>
           <CardFooter className="mt-4 flex flex-col">
-            <Button type="submit" className="w-full">
-              Register
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={mutation.isLoading}
+            >
+              {mutation.isLoading ? "Registering..." : "Register"}
             </Button>
             <p>
-              Havve an account already? <Link href="/login">Login</Link>
+              Have an account already? <Link href="/login">Login</Link>
             </p>
           </CardFooter>
         </form>
