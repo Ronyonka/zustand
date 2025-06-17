@@ -18,6 +18,10 @@ import { useUserStore } from "../store/user";
 
 import Link from "next/link";
 
+type ErrorResponse = {
+  message: string;
+};
+
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +46,7 @@ function LoginPage() {
     onSuccess: () => {
       router.push("/");
     },
-    onError: (error: any) => {
+    onError: (error: ErrorResponse) => {
       setError(error.message || "An error occurred.");
     },
   });

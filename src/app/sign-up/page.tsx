@@ -17,6 +17,10 @@ import { Button } from "@/components/ui/button";
 
 import Link from "next/link";
 
+type ErrorResponse = {
+  message: string;
+};
+
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,7 +45,7 @@ export default function RegisterPage() {
     onSuccess: () => {
       router.push("/");
     },
-    onError: (error: any) => {
+    onError: (error: ErrorResponse) => {
       setError(error.message || "An error occurred.");
     },
   });
